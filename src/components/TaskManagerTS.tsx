@@ -1,54 +1,41 @@
-import { nanoid } from "nanoid";
-import { useState } from "react";
-import "./TaskManagerTS.css";
+import React, { useState } from "react";
+import "./TaskManager.css";
+import useTaskManager from "./useTaskManager";
 
-interface Task {
-  id: string;
-  title: string;
-}
+
+import { Task } from "./useTaskManager";
 
 export const TaskManagerTS: React.FC = () => {
+  const { addTask, deleteTask, updateTask, filterTasks } = useTaskManager();
   const [title, setTitle] = useState<string>("");
   const [searchKeyword, setSearchKeyword] = useState<string>("");
-  const [tasks, setTasks] = useState<Task[]>([]);
-
-  const completeTask = (id: string): void => {
-    setTasks(tasks.filter((task) => task.id !== id));
-  };
-
-  const updateTask = (id: string, taskUpdate: Task): void => {
-    const newTasks = tasks.slice();
-    const index = tasks.findIndex((task) => task.id === id);
-    newTasks[index] = taskUpdate;
-    setTasks(newTasks);
-  };
-
-  const addTask = (): void => {
-    if (title.length < 1) {
-      return;
-    }
-    const newTask: Task = {
-      id: nanoid(),
-      title,
-    };
-    setTasks((prev) => prev.concat(newTask));
+ const handleAddTask = () => {
+    addTask(title);
     setTitle("");
   };
 
-  const handleSearch = (ev: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleDeleteTask = (id: string) => {
+    deleteTask(id);
+  };
+
+  const handleUpdateTask = (id: string, updatedTask: Partial<Task>) => {
+    updateTask(id, updatedTask);
+  };
+
+  const handleSearch = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyword(ev.target.value);
   };
 
-  const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchKeyword.toLowerCase())
-  );
+  const filteredTasks = filterTasks(searchKeyword);
 
   return (
     <div className="container">
       <h1>Task Manager</h1>
+
       <div>
         <input type="text" onChange={handleSearch} placeholder="Search Task" />
       </div>
+
       <div className="task">
         <input
           type="text"
@@ -57,8 +44,9 @@ export const TaskManagerTS: React.FC = () => {
             setTitle(ev.target.value);
           }}
         />
-        <button onClick={addTask}>Add Task</button>
+        <button onClick={handleAddTask}>Add Task</button>
       </div>
+
       <ul className="container">
         {filteredTasks.map((task) => (
           <li key={task.id} className="task">
@@ -67,9 +55,9 @@ export const TaskManagerTS: React.FC = () => {
                 type="text"
                 placeholder="Add new task"
                 value={task.title}
-                onChange={(e) => updateTask(task.id, { id: task.id, title: e.target.value })}
-                />
-              <button onClick={() => completeTask(task.id)}>Done</button>
+                onChange={(e) => handleUpdateTask(task.id, { title: e.target.value })}
+              />
+              <button onClick={() => handleDeleteTask(task.id)}>Done</button>
             </div>
           </li>
         ))}
