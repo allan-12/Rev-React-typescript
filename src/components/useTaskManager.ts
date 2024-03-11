@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { nanoid } from "nanoid";
 
- interface Task {
+  export interface Task {
   id: string;
   title: string;
 }

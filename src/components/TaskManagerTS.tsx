@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import "./TaskManager.css";
 import useTaskManager from "./useTaskManager";
 
-interface Task {
-  id: string;
-  title: string;
-}
+
+import { Task } from "./useTaskManager";
 
 export const TaskManagerTS: React.FC = () => {
   const { addTask, deleteTask, updateTask, filterTasks } = useTaskManager();
